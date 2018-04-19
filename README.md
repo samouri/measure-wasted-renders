@@ -27,3 +27,6 @@ Then later inside the devtools console you can run `window.prettyPrintWasted()` 
 ## TO DO
  - remove lodash dependency
  - publish to npm
+ - add kitten gif
+ 
+ ![Alt Text](https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif)
