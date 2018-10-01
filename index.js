@@ -1,5 +1,3 @@
-import { isEqual, pickBy, forEach, cloneDeep } from "lodash";
-
 const wastedRenders = {};
 window.wastedRenders = wastedRenders;
 
@@ -22,7 +20,7 @@ function measuredComponentDidUpdate(nextProps) {
 
   const keys = Object.keys(nextProps);
   keys.forEach(key => {
-    const deepEqual = isEqual(this.props[key], nextProps[key]);
+    const deepEqual = jsonEqual(this.props[key], nextProps[key]);
     const shallowEqual = this.props[key] === nextProps[key];
     if (!shallowEqual && deepEqual) {
       badProps[key] = (badProps[key] || 0) + 1;
@@ -35,14 +33,22 @@ function measuredComponentDidUpdate(nextProps) {
   }
 }
 
+function jsonEqual(a,b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function measureComponents(React) {
   React.Component.prototype.componentDidUpdate = measuredComponentDidUpdate;
 }
 
 function prettyPrintWasted() {
-  const offenders = cloneDeep(
-    pickBy(wastedRenders, component => component.wastedRenderCount > 10)
-  );
+  const offenders = JSON.parse(JSON.stringify(
+    wastedRenders.forEach(component => {
+      if (component.wastedRenderCount > 10) {
+        return component;
+      }
+    });
+  ));
   Object.values(offenders).forEach(component => {
     component[BAD_PROPS] = JSON.stringify(component[BAD_PROPS]);
   });
